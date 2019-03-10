@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 buildscript {
     ext.kotlin_version = '1.3.21'
     ext.ktor_version = '1.1.2'
@@ -27,6 +29,9 @@ compileTestKotlin { kotlinOptions.jvmTarget = "1.8" }
 repositories {
     mavenCentral()
     maven { url "https://dl.bintray.com/kotlin/ktor" }
+    maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
+    maven { url "https://dl.bintray.com/kotlin/kotlinx" }
+    maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
 }
 
 dependencies {
@@ -47,6 +52,56 @@ dependencies {
     compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
     compile 'com.google.apis:google-api-services-calendar:v3-rev305-1.23.0'
 
+}
+
+task npmInstall(type: Exec) {
+    workingDir '../front_end'
+
+    //Inputs
+    inputs.file("${projectDir}/../front_end/package.json")
+
+    String npm = Os.isFamily(Os.FAMILY_WINDOWS) ? 'npm.cmd' : 'npm'
+    commandLine npm, 'install'
+}
+
+task npmBuild(type: Exec) {
+    dependsOn(npmInstall)
+    workingDir '../front_end'
+
+    //Inputs
+    inputs.file("${projectDir}/../front_end/package.json")
+    inputs.file("${projectDir}/../front_end/package-lock.json")
+    inputs.dir("${projectDir}/../front_end/public")
+    inputs.dir("${projectDir}/../front_end/src")
+
+    //Outputs
+    outputs.file("${projectDir}/../front_end/build/index.html")
+    outputs.dir("${buildDir}/../front_end/build/static/")
+
+    String npm = Os.isFamily(Os.FAMILY_WINDOWS) ? 'npm.cmd' : 'npm'
+    commandLine npm, 'run', 'build'
+}
+
+tasks.create('retrieveFrontEnd', Copy) {
+    dependsOn(npmBuild)
+    //Copy index
+    from ("${projectDir}/../front_end/build/index.html")
+    into ("${buildDir}/generated/static/")
+    //Copy static files
+    from ("${projectDir}/../front_end/build/static/")
+    into ("${buildDir}/generated/static/")
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs "${buildDir}/generated"
+        }
+    }
+}
+
+processResources {
+    dependsOn(retrieveFrontEnd)
 }
 
 jar {
