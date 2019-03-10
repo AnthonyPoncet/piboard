@@ -1,0 +1,62 @@
+buildscript {
+    ext.kotlin_version = '1.3.21'
+    ext.ktor_version = '1.1.2'
+
+    repositories {
+        mavenCentral()
+        maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'application'
+
+group 'org.aponcet'
+version '1.0-SNAPSHOT'
+
+mainClassName = 'Main'
+
+sourceCompatibility = 1.8
+compileKotlin { kotlinOptions.jvmTarget = "1.8" }
+compileTestKotlin { kotlinOptions.jvmTarget = "1.8" }
+
+repositories {
+    mavenCentral()
+    maven { url "https://dl.bintray.com/kotlin/ktor" }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
+    compile "io.ktor:ktor-server-netty:$ktor_version"
+    compile "io.ktor:ktor-client-core:$ktor_version"
+    compile "io.ktor:ktor-client-apache:$ktor_version"
+    compile "io.ktor:ktor-client-auth-basic:$ktor_version"
+    compile "io.ktor:ktor-client-json:$ktor_version"
+    compile "io.ktor:ktor-client-json-jvm:$ktor_version"
+    compile "io.ktor:ktor-client-gson:$ktor_version"
+    compile "io.ktor:ktor-gson:$ktor_version"
+
+    compile "com.xenomachina:kotlin-argparser:2.0.7"
+    
+    compile 'com.google.api-client:google-api-client:1.23.0'
+    compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
+    compile 'com.google.apis:google-api-services-calendar:v3-rev305-1.23.0'
+
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'MainKt'
+    }
+
+
+    // This line of code recursively collects and copies all of a project's files
+    // and adds them to the JAR itself. One can extend this task, to skip certain
+    // files or particular types at will
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
