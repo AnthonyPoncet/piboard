@@ -11,6 +11,10 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.http.content.static
+import io.ktor.http.content.default
+import io.ktor.http.content.resource
+import io.ktor.http.content.resources
 
 
 class Core {
@@ -54,6 +58,14 @@ fun main(args: Array<String>) {
         }
 
         routing {
+            static {
+                resource("static/index.html")
+                default("static/index.html")
+            }
+            static ("static") {
+                resources("static")
+            }
+
             get("/meteo") {
                 call.respond(HttpStatusCode.OK, core.getWeatherInfo() ?: "Weather Info are not loaded.")
             }

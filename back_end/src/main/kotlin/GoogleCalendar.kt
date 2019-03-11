@@ -76,7 +76,7 @@ class GoogleCalendar : Loader {
     @Throws(IOException::class)
     private fun getCredentials(HTTP_TRANSPORT: NetHttpTransport): Credential {
         // Load client secrets.
-        val `in` = CalendarQuickstart::class.java.getResourceAsStream(CREDENTIALS_FILE_PATH)
+        val `in` = GoogleCalendar::class.java.getResourceAsStream(CREDENTIALS_FILE_PATH)
         val clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, InputStreamReader(`in`))
 
         // Build flow and trigger user authorization request.
