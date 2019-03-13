@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, CardText } from 'reactstrap'
 
-let Api_Key = 'e06ab83a1a301ea1e977e34f8e856940';
-
 class Weather extends Component {
     constructor(props) {
         super(props);
@@ -16,13 +14,13 @@ class Weather extends Component {
     }
 
     tick() {
-        fetch('http://api.openweathermap.org/data/2.5/weather?units=metric&lang=fr&q=paris,fr&appid=' + Api_Key)
+        fetch('http://localhost:8080/meteo')
             .then(res => res.json())
             .then(function(res) { console.log(res); return res; })
             .then(res => this.setState({
-                temperature: res.main.temp,
-                humidity: res.main.humidity,
-                description: res.weather[0].description,
+                temperature: res.temperature,
+                humidity: res.humidity,
+                description: res.description,
                 error: null,
                 lastUpdate: new Date()
                 }));
@@ -30,7 +28,7 @@ class Weather extends Component {
 
     componentDidMount() {
         this.tick();
-        this.intervalTick = setInterval(() => this.tick(), 100000000000);
+        this.intervalTick = setInterval(() => this.tick(), 10000);
     }
 
     componentWillUnmount() {

@@ -1,31 +1,93 @@
 import React, { Component } from 'react';
-//import { google } from 'googleapis';
-import { Button } from 'reactstrap';
-import ApiCalendar from 'react-google-calendar-api';
+import { Table, Card, CardHeader, CardBody, CardText } from 'reactstrap';
 
-let client_id = '647610211813-h0lvh4tvmmdc7ol0vedgs3bpslk6bj3e.apps.googleusercontent.com';
-let client_secret = 'EgE26D9anqSgjEHEVu6Xy_eJ';
-let redirect_uri0 = '';
-
-
+function convertDate(jsonDate) {
+    var d = new Date(0);
+    d.setUTCSeconds(jsonDate.epochSec); //No shift needed
+    return d;
+}
 
 class GoogleApis extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            events : []
+        };
+    }
+
+    adaptEvent(item, index) {
+        return { start : convertDate(item.start) , end: convertDate(item.end), organizer: item.organizer, summary: item.summary }
+    }
+
+    tick() {
+        fetch('http://localhost:8080/calendar')
+            .then(res => res.json())
+            .then(function(res) { console.log(res); return res; })
+            .then(data => {
+                this.setState({ events: data.map(this.adaptEvent) });
+            });
+    }
 
     componentDidMount() {
-  //      const oauth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uri0);
-  //      google.options({auth: oauth2Client});
-
-  //      const authorizeUrl = oauth2Client.generateAuthUrl({access_type: 'offline', scope: 'https://www.googleapis.com/auth/calendar'});
+        this.tick();
+        this.intervalTick = setInterval(() => this.tick(), 10000);
     }
 
-    handle(e) {
-        ApiCalendar.handleAuthClick();
+    renderEvent(event) {
+        return (
+        <Card>
+            <CardHeader>{event.start.toDateString()}</CardHeader>
+            <CardBody>
+                <CardText>
+                    <p>{event.summary}</p>
+                    <p className="text-muted">{event.start.getHours()}:{event.start.getMinutes()} * {event.end.getHours()}:{event.end.getMinutes()}</p>
+                </CardText>
+            </CardBody>
+        </Card>);
     }
-    
+
+    renderEvent2(event) {
+        return (
+        <Table>
+            <thead class="bg-secondary">
+                <tr>
+                <th>{event.start.toDateString()}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><th>
+                    <p>{event.summary}</p>
+                    <p className="text-muted">{event.start.getHours()}:{event.start.getMinutes()} * {event.end.getHours()}:{event.end.getMinutes()}</p>
+                </th></tr>
+            </tbody>
+        </Table>);
+    }
+
+    renderEvents(events) {
+        if (events.length === 0) {
+            return;
+        }
+
+        let navItems = [];
+        var i;
+        for (i = 0; i < events.length; i++) {
+            navItems.push(this.renderEvent2(events[i]));
+        }
+
+        return navItems;
+    }
+
     render() {
-        return(<div>
-            <Button onClick={(e) => this.handle(e)}/>
-            <p>Hello</p>
+        return(
+        <div>
+            <Card>
+                <CardHeader tag="h3">Evenements</CardHeader>
+                <CardBody>
+                    <CardText>
+                        {this.renderEvents(this.state.events)}
+                    </CardText>
+                </CardBody>
+            </Card>
         </div>);
     }
 

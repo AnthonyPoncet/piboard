@@ -42,7 +42,7 @@ class Weather : Loader {
     private val client = HttpClient(Apache) {}
 
     override fun operationName(): String {
-        return "WeatherS"
+        return "Weather"
     }
 
     override suspend fun load(dataManager: DataManager) {
