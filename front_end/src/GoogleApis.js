@@ -37,7 +37,7 @@ class GoogleApis extends Component {
         return (
         <Card>
             <CardHeader>{event.start.toDateString()}</CardHeader>
-            <CardBody>
+            <CardBody width="100%">
                 <CardText>
                     <p>{event.summary}</p>
                     <p className="text-muted">{event.start.getHours()}:{event.start.getMinutes()} * {event.end.getHours()}:{event.end.getMinutes()}</p>
@@ -49,7 +49,7 @@ class GoogleApis extends Component {
     renderEvent2(event) {
         return (
         <Table>
-            <thead class="bg-secondary">
+            <thead class="bg-primary">
                 <tr>
                 <th>{event.start.toDateString()}</th>
                 </tr>
@@ -57,7 +57,7 @@ class GoogleApis extends Component {
             <tbody>
                 <tr><th>
                     <p>{event.summary}</p>
-                    <p className="text-muted">{event.start.getHours()}:{event.start.getMinutes()} * {event.end.getHours()}:{event.end.getMinutes()}</p>
+                    <p className="text-muted">{event.start.getHours()}:{event.start.getMinutes()} ● {event.end.getHours()}:{event.end.getMinutes()}</p>
                 </th></tr>
             </tbody>
         </Table>);
@@ -78,17 +78,7 @@ class GoogleApis extends Component {
     }
 
     render() {
-        return(
-        <div>
-            <Card>
-                <CardHeader tag="h3">Evenements</CardHeader>
-                <CardBody>
-                    <CardText>
-                        {this.renderEvents(this.state.events)}
-                    </CardText>
-                </CardBody>
-            </Card>
-        </div>);
+        return(<div>{this.renderEvents(this.state.events)}</div>);
     }
 
 }
