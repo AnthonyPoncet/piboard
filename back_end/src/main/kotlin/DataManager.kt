@@ -1,5 +1,3 @@
-import java.time.LocalDateTime
-
 data class WeatherInfo(
     val temperature: Double,
     val humidity: Double,

@@ -46,4 +46,8 @@ class Scheduler(private val dataManager: DataManager, private val loaders: List<
             }
         }
     }
+
+    fun getLoaders() : List<Loader> {
+        return loaders
+    }
 }
