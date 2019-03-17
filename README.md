@@ -1,70 +1,57 @@
-# piboard
-=======
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+#PiBoard
 
-## Available Scripts
+##Purpose
+Dashboard for raspberry Pi but could be use everywhere.
 
-In the project directory, you can run:
+It contain a back end wrote in Kotlin using ktor and a 
+front end in ReactJS.
 
-### `npm start`
+##Build
+Project build with gradle 5.2.1. Never test with prior version.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+At root folder, run
+```
+gradlew jar
+```
+It will generate a jar file under <root>/back_end/build/libs.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+This one will contain both client and server.
 
-### `npm test`
+##Back end
+Back end contain a server wrote in Kotlin using ktor. It could 
+be start using 
+```
+java -jar back_end-1.0-SNAPSHOT.jar <-p port> <-c calendarIdsFile>
+```
+By default, the port is 8080 and the file is *calendar_ids.csv*
+located just near the jar file. The purpose of the csv file
+will be explain later.
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+All data in the server are updated each 5 minutes.
 
-### `npm run build`
+###end points
+#####/meteo
+######GET
+Will return the current meteo for Paris.
+#####/calendar
+######GET
+Will return the events of all calendar configured.
+######POST
+Will add some calendarIds as interest. Will return for each
+one if successfully added or not. In case of success, it will 
+append there ids to the provided csv file.
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+###Google calendar loader specification
+While starting the server for the first time, it will ask to 
+provide a connection to an google account using a browser.
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+Currently, only one account is allowed in the app, so please
+use an account having access to all wanted agenda.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+A CSV could be passed as parameter of the application. This one
+should contain all calendar (ids) you are interested on. Please
+note that the server will not start if one of this calendar is 
+not accessible (log in standard console).
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+##Front end
+Page could be access at root http address of the server.

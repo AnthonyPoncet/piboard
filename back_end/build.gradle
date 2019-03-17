@@ -1,0 +1,117 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+buildscript {
+    ext.kotlin_version = '1.3.21'
+    ext.ktor_version = '1.1.2'
+
+    repositories {
+        mavenCentral()
+        maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'application'
+
+group 'org.aponcet'
+version '1.0-SNAPSHOT'
+
+mainClassName = 'Main'
+
+sourceCompatibility = 1.8
+compileKotlin { kotlinOptions.jvmTarget = "1.8" }
+compileTestKotlin { kotlinOptions.jvmTarget = "1.8" }
+
+repositories {
+    mavenCentral()
+    maven { url "https://dl.bintray.com/kotlin/ktor" }
+    maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
+    maven { url "https://dl.bintray.com/kotlin/kotlinx" }
+    maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
+    compile "io.ktor:ktor-server-netty:$ktor_version"
+    compile "io.ktor:ktor-client-core:$ktor_version"
+    compile "io.ktor:ktor-client-apache:$ktor_version"
+    compile "io.ktor:ktor-client-auth-basic:$ktor_version"
+    compile "io.ktor:ktor-client-json:$ktor_version"
+    compile "io.ktor:ktor-client-json-jvm:$ktor_version"
+    compile "io.ktor:ktor-client-gson:$ktor_version"
+    compile "io.ktor:ktor-gson:$ktor_version"
+
+    compile "com.xenomachina:kotlin-argparser:2.0.7"
+    
+    compile 'com.google.api-client:google-api-client:1.23.0'
+    compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
+    compile 'com.google.apis:google-api-services-calendar:v3-rev305-1.23.0'
+
+}
+
+task npmInstall(type: Exec) {
+    workingDir '../front_end'
+
+    //Inputs
+    inputs.file("${projectDir}/../front_end/package.json")
+
+    String npm = Os.isFamily(Os.FAMILY_WINDOWS) ? 'npm.cmd' : 'npm'
+    commandLine npm, 'install'
+}
+
+task npmBuild(type: Exec) {
+    dependsOn(npmInstall)
+    workingDir '../front_end'
+
+    //Inputs
+    inputs.file("${projectDir}/../front_end/package.json")
+    inputs.file("${projectDir}/../front_end/package-lock.json")
+    inputs.dir("${projectDir}/../front_end/public")
+    inputs.dir("${projectDir}/../front_end/src")
+
+    //Outputs
+    outputs.file("${projectDir}/../front_end/build/index.html")
+    outputs.dir("${buildDir}/../front_end/build/static/")
+
+    String npm = Os.isFamily(Os.FAMILY_WINDOWS) ? 'npm.cmd' : 'npm'
+    commandLine npm, 'run', 'build'
+}
+
+tasks.create('retrieveFrontEnd', Copy) {
+    dependsOn(npmBuild)
+    //Copy index
+    from ("${projectDir}/../front_end/build/index.html")
+    into ("${buildDir}/generated/static/")
+    //Copy static files
+    from ("${projectDir}/../front_end/build/static/")
+    into ("${buildDir}/generated/static/")
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs "${buildDir}/generated"
+        }
+    }
+}
+
+processResources {
+    dependsOn(retrieveFrontEnd)
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'MainKt'
+    }
+
+
+    // This line of code recursively collects and copies all of a project's files
+    // and adds them to the JAR itself. One can extend this task, to skip certain
+    // files or particular types at will
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
