@@ -6,7 +6,7 @@ import io.ktor.client.request.get
 
 data class Owm(
     val coord: Coordinate,
-    val weather: ArrayList<WInfo>,
+    val weather: List<WInfo>,
     val base: String, /* Internal parameter */
     val main: Main,
     val visibility: Long,
