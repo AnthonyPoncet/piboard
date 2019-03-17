@@ -20,12 +20,13 @@ class GoogleApis extends Component {
     }
 
     tick() {
-        fetch('http://localhost:8080/calendar')
+        fetch('http://'+window.location.hostname+':'+window.location.port+'/calendar')
             .then(res => res.json())
             .then(function(res) { console.log(res); return res; })
             .then(data => {
                 this.setState({ events: data.map(this.adaptEvent) });
-            });
+            })
+            .catch(err => this.setState({error : err}));
     }
 
     componentDidMount() {

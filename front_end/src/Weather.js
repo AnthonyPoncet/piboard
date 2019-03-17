@@ -14,7 +14,7 @@ class Weather extends Component {
     }
 
     tick() {
-        fetch('http://localhost:8080/meteo')
+        fetch('http://'+window.location.hostname+':'+window.location.port+'/meteo')
             .then(res => res.json())
             .then(function(res) { console.log(res); return res; })
             .then(res => this.setState({
@@ -23,7 +23,8 @@ class Weather extends Component {
                 description: res.description,
                 error: null,
                 lastUpdate: new Date()
-                }));
+                }))
+            .catch(err => this.setState({error : err}));
     }
 
     componentDidMount() {

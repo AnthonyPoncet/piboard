@@ -5,17 +5,16 @@ import com.xenomachina.argparser.default
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CORS
+import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.default
-import io.ktor.http.content.resource
-import io.ktor.http.content.resources
-import io.ktor.http.content.static
+import io.ktor.http.content.*
 import io.ktor.request.receiveText
 import io.ktor.response.respond
 import io.ktor.routing.get
 import io.ktor.routing.post
+import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -73,6 +72,7 @@ fun main(args: Array<String>) {
         install(CORS) {
             anyHost()
         }
+        install(Compression)
         install(ContentNegotiation) {
             gson {
                 setPrettyPrinting()
@@ -80,27 +80,30 @@ fun main(args: Array<String>) {
         }
 
         routing {
-            static {
-                resource("static/index.html")
-                default("static/index.html")
-            }
-            static ("static") {
-                resources("static")
-            }
-
             get("/meteo") {
                 call.respond(HttpStatusCode.OK, message = core.getWeatherInfo() ?: "Weather Info are not loaded.")
             }
-            get("/calendar") {
-                call.respond(HttpStatusCode.OK, message = core.getCalendar())
-            }
-            post("/calendar") {
-                val body = call.receiveText()
-                val ids = Gson().fromJson(body, CalendarIds::class.java)
-                val addCalendar = core.addCalendar(ids.calendarIds)
+            route("/calendar") {
+                get {
+                    call.respond(HttpStatusCode.OK, message = core.getCalendar())
+                }
+                post {
+                    val body = call.receiveText()
+                    val ids = Gson().fromJson(body, CalendarIds::class.java)
+                    val addCalendar = core.addCalendar(ids.calendarIds)
 
-                addToCSV(arguments.calendarIdsPath, addCalendar.added)
-                call.respond(HttpStatusCode.Accepted, message = addCalendar)
+                    addToCSV(arguments.calendarIdsPath, addCalendar.added)
+                    call.respond(HttpStatusCode.Accepted, message = addCalendar)
+                }
+            }
+
+            static("/") {
+                resource("static/index.html")
+                defaultResource("static/index.html")
+            }
+
+            static ("static") {
+                resources("static")
             }
         }
 
