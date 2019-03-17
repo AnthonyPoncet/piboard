@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './App.css';
 
 import Clock from './Clock';
 import GoogleApis from './GoogleApis';
@@ -13,12 +12,12 @@ class App extends Component {
         return (
         <Container>
             <Row>
-                <Col xs="6" sm="6" md="6" ls="6" xl="6">
-                    <Row><Clock/></Row>
-                    <Row><GoogleApis/></Row>
+                <Col>
+                    <Clock/>
+                    <GoogleApis/>
                 </Col>
-                <Col xs="6" sm="6" md="6" ls="6" xl="6">
-                    <Row><Weather/></Row>
+                <Col>
+                    <Weather/>
                 </Col>
             </Row>
         </Container>);

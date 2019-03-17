@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Card, CardHeader, CardBody, CardText } from 'reactstrap';
+import { Table } from 'reactstrap';
 
 function convertDate(jsonDate) {
     var d = new Date(0);
@@ -33,20 +33,15 @@ class GoogleApis extends Component {
         this.intervalTick = setInterval(() => this.tick(), 10000);
     }
 
-    renderEvent(event) {
-        return (
-        <Card>
-            <CardHeader>{event.start.toDateString()}</CardHeader>
-            <CardBody width="100%">
-                <CardText>
-                    <p>{event.summary}</p>
-                    <p className="text-muted">{event.start.getHours()}:{event.start.getMinutes()} * {event.end.getHours()}:{event.end.getMinutes()}</p>
-                </CardText>
-            </CardBody>
-        </Card>);
+    formatNum(num) {
+        if (num < 10) {
+            return "0" + num;
+        } else {
+            return num;
+        }
     }
 
-    renderEvent2(event) {
+    renderEvent(event) {
         return (
         <Table>
             <thead class="bg-primary">
@@ -57,7 +52,10 @@ class GoogleApis extends Component {
             <tbody>
                 <tr><th>
                     <p>{event.summary}</p>
-                    <p className="text-muted">{event.start.getHours()}:{event.start.getMinutes()} ● {event.end.getHours()}:{event.end.getMinutes()}</p>
+                    <p className="text-muted">
+                        {this.formatNum(event.start.getHours())}:{this.formatNum(event.start.getMinutes())}
+                        {' '}●{' '}
+                        {this.formatNum(event.end.getHours())}:{this.formatNum(event.end.getMinutes())}</p>
                 </th></tr>
             </tbody>
         </Table>);
@@ -71,7 +69,7 @@ class GoogleApis extends Component {
         let navItems = [];
         var i;
         for (i = 0; i < events.length; i++) {
-            navItems.push(this.renderEvent2(events[i]));
+            navItems.push(this.renderEvent(events[i]));
         }
 
         return navItems;
