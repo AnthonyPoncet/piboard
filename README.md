@@ -1,12 +1,12 @@
-#PiBoard
+# PiBoard
 
-##Purpose
+## Purpose
 Dashboard for raspberry Pi but could be use everywhere.
 
 It contain a back end wrote in Kotlin using ktor and a 
 front end in ReactJS.
 
-##Build
+## Build
 Project build with gradle 5.2.1. Never test with prior version.
 
 At root folder, run
@@ -17,7 +17,7 @@ It will generate a jar file under <root>/back_end/build/libs.
 
 This one will contain both client and server.
 
-##Back end
+## Back end
 Back end contain a server wrote in Kotlin using ktor. It could 
 be start using 
 ```
@@ -29,19 +29,19 @@ will be explain later.
 
 All data in the server are updated each 5 minutes.
 
-###end points
-#####/meteo
-######GET
+### end points
+##### /meteo
+###### GET
 Will return the current meteo for Paris.
-#####/calendar
-######GET
+##### /calendar
+###### GET
 Will return the events of all calendar configured.
-######POST
+###### POST
 Will add some calendarIds as interest. Will return for each
 one if successfully added or not. In case of success, it will 
 append there ids to the provided csv file.
 
-###Google calendar loader specification
+### Google calendar loader specification
 While starting the server for the first time, it will ask to 
 provide a connection to an google account using a browser.
 
@@ -53,5 +53,5 @@ should contain all calendar (ids) you are interested on. Please
 note that the server will not start if one of this calendar is 
 not accessible (log in standard console).
 
-##Front end
+## Front end
 Page could be access at root http address of the server.
