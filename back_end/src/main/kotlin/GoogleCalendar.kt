@@ -26,13 +26,12 @@ data class AddCalendarAnswer (
 
 class UnknownCalendars(message: String) : Exception(message)
 
-class GoogleCalendar(calendarIds: Set<String>) : Loader {
+class GoogleCalendar(private val googleCredentialsFile: String, calendarIds: Set<String>) : Loader {
     companion object {
         private const val APPLICATION_NAME = "Google Calendar for PiBoard"
 
         private val HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport()
         private val JSON_FACTORY = JacksonFactory.getDefaultInstance()
-        private const val CREDENTIALS_FILE_PATH = "/credentials.json"
         private val SCOPES = Collections.singletonList(CalendarScopes.CALENDAR_READONLY)
         private const val TOKENS_DIRECTORY_PATH = "tokens"
 
@@ -112,7 +111,7 @@ class GoogleCalendar(calendarIds: Set<String>) : Loader {
     @Throws(IOException::class)
     private fun getCredentials(HTTP_TRANSPORT: NetHttpTransport): Credential {
         // Load client secrets.
-        val `in` = GoogleCalendar::class.java.getResourceAsStream(CREDENTIALS_FILE_PATH)
+        val `in` = File(googleCredentialsFile).inputStream()
         val clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, InputStreamReader(`in`))
 
         // Build flow and trigger user authorization request.
