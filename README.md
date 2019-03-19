@@ -21,11 +21,12 @@ This one will contain both client and server.
 Back end contain a server wrote in Kotlin using ktor. It could 
 be start using 
 ```
-java -jar back_end-1.0-SNAPSHOT.jar <-p port> <-c calendarIdsFile>
+java -jar back_end-1.0-SNAPSHOT.jar <-p port> <-c calendarIdsFile> <-g googleCredentialsFile>
 ```
 By default, the port is 8080 and the file is *calendar_ids.csv*
 located just near the jar file. The purpose of the csv file
-will be explain later.
+will be explain later. The googleCredentialsFile should contain all 
+needed data for Google Calendar API. (TODO: explain what and how to generate).
 
 All data in the server are updated each 5 minutes.
 

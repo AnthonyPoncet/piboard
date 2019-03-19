@@ -1,7 +1,9 @@
 import com.google.common.collect.Sets
 import com.google.gson.Gson
 import com.xenomachina.argparser.ArgParser
+import com.xenomachina.argparser.InvalidArgumentException
 import com.xenomachina.argparser.default
+import com.xenomachina.argparser.mainBody
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CORS
@@ -23,12 +25,12 @@ import java.lang.IllegalStateException
 import java.util.stream.Collectors
 
 
-class Core(calendarIds: Set<String>) {
+class Core(googleCredentialsFile: String, calendarIds: Set<String>) {
     private var dataManager = DataManager()
     private var scheduler : Scheduler
 
     init {
-        val loaders : List<Loader> = listOf(Weather(), GoogleCalendar(calendarIds))
+        val loaders : List<Loader> = listOf(Weather(), GoogleCalendar(googleCredentialsFile, calendarIds))
         scheduler = Scheduler(dataManager, loaders)
     }
 
@@ -64,51 +66,53 @@ data class CalendarIds(
 )
 
 fun main(args: Array<String>) {
-    val arguments = ArgParser(args).parseInto(::CliArgs)
-    val core = Core(parseCSV(arguments.calendarIdsPath))
-    core.start()
+    mainBody {
+        val arguments = ArgParser(args).parseInto(::CliArgs)
+        val core = Core(arguments.googleCredentialsFile, parseCSV(arguments.calendarIdsFile))
+        core.start()
 
-    val server = embeddedServer(Netty, port = arguments.port) {
-        install(CORS) {
-            anyHost()
-        }
-        install(Compression)
-        install(ContentNegotiation) {
-            gson {
-                setPrettyPrinting()
+        val server = embeddedServer(Netty, port = arguments.port) {
+            install(CORS) {
+                anyHost()
             }
-        }
-
-        routing {
-            get("/meteo") {
-                call.respond(HttpStatusCode.OK, message = core.getWeatherInfo() ?: "Weather Info are not loaded.")
-            }
-            route("/calendar") {
-                get {
-                    call.respond(HttpStatusCode.OK, message = core.getCalendar())
-                }
-                post {
-                    val body = call.receiveText()
-                    val ids = Gson().fromJson(body, CalendarIds::class.java)
-                    val addCalendar = core.addCalendar(ids.calendarIds)
-
-                    addToCSV(arguments.calendarIdsPath, addCalendar.added)
-                    call.respond(HttpStatusCode.Accepted, message = addCalendar)
+            install(Compression)
+            install(ContentNegotiation) {
+                gson {
+                    setPrettyPrinting()
                 }
             }
 
-            static("/") {
-                resource("static/index.html")
-                defaultResource("static/index.html")
+            routing {
+                get("/meteo") {
+                    call.respond(HttpStatusCode.OK, message = core.getWeatherInfo() ?: "Weather Info are not loaded.")
+                }
+                route("/calendar") {
+                    get {
+                        call.respond(HttpStatusCode.OK, message = core.getCalendar())
+                    }
+                    post {
+                        val body = call.receiveText()
+                        val ids = Gson().fromJson(body, CalendarIds::class.java)
+                        val addCalendar = core.addCalendar(ids.calendarIds)
+
+                        addToCSV(arguments.calendarIdsFile, addCalendar.added)
+                        call.respond(HttpStatusCode.Accepted, message = addCalendar)
+                    }
+                }
+
+                static("/") {
+                    resource("static/index.html")
+                    defaultResource("static/index.html")
+                }
+
+                static("static") {
+                    resources("static")
+                }
             }
 
-            static ("static") {
-                resources("static")
-            }
         }
-
+        server.start(wait = true)
     }
-    server.start(wait = true)
 
 }
 
@@ -146,8 +150,21 @@ class CliArgs(parser: ArgParser) {
         toInt()
     }.default(8080)
 
-    val calendarIdsPath : String by parser.storing(
-        "-c", "--calendarIdsPath",
-        help = "path to csv file containing calendarIds")
+    val calendarIdsFile : String by parser.storing(
+        "-c", "--calendarIdsFile",
+        help = "csv file containing calendarIds")
         .default(DEFAULT_CALENDAR_IDS_CSV)
+
+    val googleCredentialsFile : String by parser.storing(
+        "-g", "--googleCredentialsFile",
+        help = "json file containing google credential")
+        .addValidator {
+            val file = File(googleCredentialsFile)
+            if (!file.exists()) {
+                throw InvalidArgumentException("$googleCredentialsFile passed as googleCredentialsFile does not exist.")
+            }
+            if (file.extension != "json") {
+                throw InvalidArgumentException("$googleCredentialsFile passed as googleCredentialsFile is not a json but a ${file.extension}.")
+            }
+        }
 }
