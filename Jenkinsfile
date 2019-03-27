@@ -6,13 +6,25 @@ pipeline {
 
     stages {
         stage ("build") {
-            sh './gradlew build'
+            steps {
+                script {
+                    sh './gradlew build'
+                }
+            }
         }
         stage ("test") {
-            sh './gradlew test'
+            steps {
+                script {
+                    sh './gradlew test'
+                }
+            }
         }
         stage ("package") {
-            sh './gradlew jar'
+            steps {
+                script {
+                    sh './gradlew jar'
+                }
+            }
         }
     }
 }
