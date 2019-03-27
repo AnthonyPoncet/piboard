@@ -5,10 +5,6 @@ pipeline {
     }
 
     stages {
-        stage ("Synchronize") {
-            git url: 'https://github.com/AnthonyPoncet/piboard.git'
-            sh 'git checkout add_tests'
-        }
         stage ("build") {
             sh './gradlew build'
         }
