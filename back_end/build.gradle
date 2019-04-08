@@ -52,6 +52,18 @@ dependencies {
     compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
     compile 'com.google.apis:google-api-services-calendar:v3-rev305-1.23.0'
 
+    testCompile 'io.kotlintest:kotlintest-runner-junit5:3.1.9'
+}
+
+test {
+    useJUnitPlatform()
+
+    // show standard out and standard error of the test JVM(s) on the console
+    testLogging.showStandardStreams = true
+
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED", "STANDARD_OUT", "STANDARD_ERROR"
+    }
 }
 
 task npmInstall(type: Exec) {
@@ -98,6 +110,8 @@ sourceSets {
             srcDirs "${buildDir}/generated"
         }
     }
+    main.kotlin.srcDirs += 'src/main/kotlin'
+    test.kotlin.srcDirs += 'test/main/kotlin'
 }
 
 processResources {
