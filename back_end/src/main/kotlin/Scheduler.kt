@@ -36,6 +36,7 @@ class Scheduler(private val dataManager: DataManager, private val loaders: List<
                         try {
                             it.load(dataManager)
                         } catch (e: Exception) {
+                            println("Exception in " + it.operationName() + " - " + e)
                         }
                     }
 

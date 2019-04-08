@@ -14,7 +14,7 @@ data class Event(
 
 class DataManager {
     private var weatherInfo : WeatherInfo? = null
-    private var calendar : List<Event> = mutableListOf()
+    private var events : List<Event> = mutableListOf()
 
     @Synchronized
     fun setWeather(owm: Owm) {
@@ -27,12 +27,12 @@ class DataManager {
     }
 
     @Synchronized
-    fun setCalendar(events : List<Event>) {
-        calendar = events
+    fun setEvents(events : List<Event>) {
+        this.events = events
     }
 
     @Synchronized
-    fun getCalendar() : List<Event> {
-        return calendar
+    fun getEvents() : List<Event> {
+        return events
     }
 }

@@ -1,7 +1,9 @@
 import com.google.gson.Gson
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.features.BadResponseStatusException
 import io.ktor.client.request.get
+import io.ktor.http.HttpStatusCode
 
 
 data class Owm(
@@ -34,10 +36,7 @@ data class Clouds(val all: Long)
 /* Internal parameter, Internal parameter, Internal parameter, Country code, Sunrise time (unix UTC), Sunset time (unix UTC) */
 data class Sys(val type: Long, val id: Long, val message: Double, val country: String, val sunrise: Long, val sunset: Long)
 
-class Weather : Loader {
-    companion object {
-        val Api_Key = "e06ab83a1a301ea1e977e34f8e856940"
-    }
+class Weather(private val api_key : String) : Loader {
 
     private val client = HttpClient(Apache) {}
 
@@ -46,8 +45,16 @@ class Weather : Loader {
     }
 
     override suspend fun load(dataManager: DataManager) {
-        val content = client.get<String>("http://api.openweathermap.org/data/2.5/weather?units=metric&lang=fr&q=paris,fr&appid=$Api_Key") {}
-        val answer = Gson().fromJson(content, Owm::class.java)
-        dataManager.setWeather(answer)
+        try {
+            val content = client.get<String>("http://api.openweathermap.org/data/2.5/weather?units=metric&lang=fr&q=paris,fr&appid=$api_key") {}
+            val answer = Gson().fromJson(content, Owm::class.java)
+            dataManager.setWeather(answer)
+        } catch (e: BadResponseStatusException) {
+            if (e.statusCode == HttpStatusCode.Unauthorized) {
+                println("Weather is misconfigured, received Unauthorized with given api key: $api_key. Please check server configuration file.")
+                return
+            }
+            throw e
+        }
     }
 }

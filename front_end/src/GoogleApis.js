@@ -44,8 +44,8 @@ class GoogleApis extends Component {
 
     renderEvent(event) {
         return (
-        <Table>
-            <thead class="bg-primary">
+        <Table key={event.summary}>
+            <thead className="bg-primary">
                 <tr>
                 <th>{event.start.toDateString()}</th>
                 </tr>
@@ -64,7 +64,13 @@ class GoogleApis extends Component {
 
     renderEvents(events) {
         if (events.length === 0) {
-            return;
+            return(<Table>
+                       <thead className="bg-primary">
+                           <tr>
+                           <th>No event planned for today, enjoy!</th>
+                           </tr>
+                       </thead>
+                   </Table>);
         }
 
         let navItems = [];
