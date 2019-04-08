@@ -1,4 +1,5 @@
-# PiBoard
+# PiBoard 
+[![Build Status](http://druponps.ddns.net:8080/job/PiBoard2/job/master/badge/icon)](http://druponps.ddns.net:8080/job/PiBoard2/job/master/)
 
 ## Purpose
 Dashboard for raspberry Pi but could be use everywhere.
