@@ -28,7 +28,7 @@ class Clock extends Component {
     }
 
     render() {
-        return (
+        /*return (
             <div>
                 <Card>
                     <CardBody>
@@ -41,7 +41,12 @@ class Clock extends Component {
                     </CardBody>
                 </Card>
             </div>
-        );
+        );*/
+        return(<div className="bg-primary">
+            <h1 className="d-inline">{this.formatNum(this.state.time.getHours())}:{this.formatNum(this.state.time.getMinutes())}</h1>
+            <h4 className="d-inline">{this.formatNum(this.state.time.getSeconds())}</h4>
+            <p>{this.state.time.toLocaleDateString("fr-FR", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</p>
+            </div>);
     }
 }
 
