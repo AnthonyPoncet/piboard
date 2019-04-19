@@ -44,21 +44,21 @@ class DataManagerTest : StringSpec() {
     init {
         "Could init DataManager" {
             val dataManager = DataManager()
-            dataManager.getCalendar() shouldBe emptyList()
+            dataManager.getEvents() shouldBe emptyList()
             dataManager.getWeather() shouldBe null
         }
 
         "Could set calendar" {
             val dataManager = DataManager()
 
-            dataManager.setCalendar(Arrays.asList(EVENT_1))
-            dataManager.getCalendar() shouldBe Arrays.asList(EVENT_1)
+            dataManager.setEvents(Arrays.asList(EVENT_1))
+            dataManager.getEvents() shouldBe Arrays.asList(EVENT_1)
 
-            dataManager.setCalendar(Arrays.asList(EVENT_1, EVENT_2))
-            dataManager.getCalendar() shouldBe Arrays.asList(EVENT_1, EVENT_2)
+            dataManager.setEvents(Arrays.asList(EVENT_1, EVENT_2))
+            dataManager.getEvents() shouldBe Arrays.asList(EVENT_1, EVENT_2)
 
-            dataManager.setCalendar(Arrays.asList(EVENT_2))
-            dataManager.getCalendar() shouldBe Arrays.asList(EVENT_2)
+            dataManager.setEvents(Arrays.asList(EVENT_2))
+            dataManager.getEvents() shouldBe Arrays.asList(EVENT_2)
         }
 
         "Could set weather info" {

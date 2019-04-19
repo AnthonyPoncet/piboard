@@ -46,13 +46,13 @@ class GoogleCalendar(private val googleCredentialsFile: String, calendarIds: Set
             .Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
             .setApplicationName(APPLICATION_NAME).build()
 
-        val addCalendarAnswer = addCalendarId(calendarIds)
+        val addCalendarAnswer = addCalendarIds(calendarIds)
         if (!addCalendarAnswer.notAdded.isEmpty()) {
             throw UnknownCalendars("These calendars are unknown for the connected user: " + addCalendarAnswer.notAdded.keys)
         }
     }
 
-    fun addCalendarId(calendarIds: Collection<String>) : AddCalendarAnswer {
+    fun addCalendarIds(calendarIds: Collection<String>) : AddCalendarAnswer {
         val added = Lists.newArrayList<String>()
         val notAdded = Maps.newHashMap<String,String>()
         for (calendar in calendarIds) {
@@ -84,12 +84,12 @@ class GoogleCalendar(private val googleCredentialsFile: String, calendarIds: Set
                 .setSingleEvents(true)
                 .execute()
 
-            dataManager.setCalendar(events.items.map { event ->
+            dataManager.setEvents(events.items.map { event ->
                 Event(
                     convert(event.start.dateTime),
                     convert(event.end.dateTime),
-                    event.organizer.displayName,
-                    event.summary
+                    event.organizer.displayName ?: "",
+                    event.summary ?: ""
                 )
             })
         }
@@ -111,8 +111,8 @@ class GoogleCalendar(private val googleCredentialsFile: String, calendarIds: Set
     @Throws(IOException::class)
     private fun getCredentials(HTTP_TRANSPORT: NetHttpTransport): Credential {
         // Load client secrets.
-        val `in` = File(googleCredentialsFile).inputStream()
-        val clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, InputStreamReader(`in`))
+        val inputStream = File(googleCredentialsFile).inputStream()
+        val clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, InputStreamReader(inputStream))
 
         // Build flow and trigger user authorization request.
         val flow = GoogleAuthorizationCodeFlow

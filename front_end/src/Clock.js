@@ -32,7 +32,7 @@ class Clock extends Component {
             <div>
                 <Card>
                     <CardBody>
-                        <CardText>
+                        <CardText tag="div">
                             <h1 className="d-inline">{this.formatNum(this.state.time.getHours())}:{this.formatNum(this.state.time.getMinutes())}</h1>
                             <h4 className="d-inline">{this.formatNum(this.state.time.getSeconds())}</h4>
 
