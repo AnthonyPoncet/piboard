@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardText } from 'reactstrap'
+import { Card, CardText } from 'reactstrap'
 
 class Clock extends Component {
     constructor(props) {
@@ -28,25 +28,18 @@ class Clock extends Component {
     }
 
     render() {
-        /*return (
+        return (
             <div>
-                <Card>
-                    <CardBody>
-                        <CardText tag="div">
-                            <h1 className="d-inline">{this.formatNum(this.state.time.getHours())}:{this.formatNum(this.state.time.getMinutes())}</h1>
-                            <h4 className="d-inline">{this.formatNum(this.state.time.getSeconds())}</h4>
+                <Card body className="text-center">
+                    <CardText tag="div">
+                        <h1 className="d-inline">{this.formatNum(this.state.time.getHours())}:{this.formatNum(this.state.time.getMinutes())}</h1>
+                        <h4 className="d-inline">{this.formatNum(this.state.time.getSeconds())}</h4>
 
-                            <p>{this.state.time.toLocaleDateString("fr-FR", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</p>
-                        </CardText>
-                    </CardBody>
+                        <p>{this.state.time.toLocaleDateString("fr-FR", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</p>
+                    </CardText>
                 </Card>
             </div>
-        );*/
-        return(<div className="bg-primary">
-            <h1 className="d-inline">{this.formatNum(this.state.time.getHours())}:{this.formatNum(this.state.time.getMinutes())}</h1>
-            <h4 className="d-inline">{this.formatNum(this.state.time.getSeconds())}</h4>
-            <p>{this.state.time.toLocaleDateString("fr-FR", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}</p>
-            </div>);
+        );
     }
 }
 

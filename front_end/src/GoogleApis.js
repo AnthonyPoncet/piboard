@@ -15,12 +15,13 @@ class GoogleApis extends Component {
         };
     }
 
-    adaptEvent(item, index) {
+    adaptEvent(item) {
         return { start : convertDate(item.start) , end: convertDate(item.end), organizer: item.organizer, summary: item.summary }
     }
 
     tick() {
-        fetch('http://'+window.location.hostname+':'+window.location.port+'/calendar')
+        //fetch('http://'+window.location.hostname+':'+window.location.port+'/calendar'){
+        fetch('http://'+window.location.hostname+':8081/calendar')
             .then(res => res.json())
             .then(function(res) { console.log(res); return res; })
             .then(data => {

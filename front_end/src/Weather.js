@@ -9,12 +9,13 @@ class Weather extends Component {
             humidity: null,
             description: null,
             error: "Loading",
-            lastUpdate: null
+            lastUpdate: new Date()
         };
     }
 
     tick() {
-        fetch('http://'+window.location.hostname+':'+window.location.port+'/meteo')
+//        fetch('http://'+window.location.hostname+':'+window.location.port+'/meteo')
+        fetch('http://'+window.location.hostname+':8081/meteo')
             .then(res => res.json())
             .then(function(res) { console.log(res); return res; })
             .then(res => {
@@ -70,16 +71,20 @@ class Weather extends Component {
                     <CardBody>
                         <CardText tag="div">
                             <div>
-                                {this.state.temperature && <div>
+                                <div>
                                     <div className= "d-inline">Température</div>
-                                    <h4 className="d-inline p-1">{this.state.temperature.toFixed(1)}°C</h4></div>}
-                                {this.state.humidity && <div>
+                                    {this.state.temperature && <h4 className="d-inline p-1">{this.state.temperature.toFixed(1)}°C</h4>}
+                                    {!this.state.temperature && <h4 className="d-inline p-1">X</h4>}
+                                </div>
+                                <div>
                                     <div className="d-inline">Humidité</div>
-                                    <h4 className="d-inline p-1">{this.state.humidity}%</h4></div>}
+                                    {this.state.humidity && <h4 className="d-inline p-1">{this.state.humidity}%</h4>}
+                                    {!this.state.humidity && <h4 className="d-inline p-1">X</h4>}
+                                </div>
                             </div>
                             {this.state.description && <h4>{this.firstCaps(this.state.description)}</h4>}
                             {this.state.error && <p className="text-danger">Error: {this.state.error}</p>}
-                            {this.state.lastUpdate && <p className="text-muted">Last Update: {this.state.lastUpdate.toLocaleDateString("fr-FR", {hour: 'numeric', minute: 'numeric', second: 'numeric'})}</p>}
+                            <p className="text-muted">Last Update: {this.state.lastUpdate.toLocaleDateString("fr-FR", {hour: 'numeric', minute: 'numeric', second: 'numeric'})}</p>
                         </CardText>
                     </CardBody>
                 </Card>
